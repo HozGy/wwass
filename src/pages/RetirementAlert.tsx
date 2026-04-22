@@ -116,10 +116,10 @@ export default function RetirementAlert() {
                     {new Date(employee.birthDate).toLocaleDateString('th-TH')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {employee.sixtiethBirthday.toLocaleDateString('th-TH')}
+                    {new Date(employee.sixtiethBirthday).toLocaleDateString('th-TH')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {employee.retirementDate.toLocaleDateString('th-TH')}
+                    {new Date(employee.retirementDate).toLocaleDateString('th-TH')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
