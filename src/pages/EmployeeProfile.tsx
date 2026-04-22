@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Mail, MapPin, Calendar, Briefcase, Edit, X } from 'lucide-react'
+import { ArrowLeft, Mail, MapPin, Calendar, Briefcase, Edit, X, Download, FileImage, FileText } from 'lucide-react'
 import { fetchEmployee } from '../lib/api'
 import type { Employee } from '../types'
 
@@ -118,6 +118,51 @@ export default function EmployeeProfile() {
       <div className="bg-white rounded-lg shadow p-6">
         <OverviewTab employee={employee} />
       </div>
+
+      {/* Attachments */}
+      {employee.attachments && employee.attachments.length > 0 && (
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">เอกสารแนบ</h3>
+          <div className="space-y-3">
+            {employee.attachments.map((attachment: any, index: number) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex items-center space-x-4">
+                  {attachment.type?.startsWith('image/') ? (
+                    <FileImage className="h-8 w-8 text-blue-600" />
+                  ) : (
+                    <FileText className="h-8 w-8 text-red-600" />
+                  )}
+                  <div>
+                    <p className="font-medium text-gray-900">{attachment.name}</p>
+                    <p className="text-sm text-gray-500">
+                      {attachment.type?.startsWith('image/') ? 'รูปภาพ' : 'PDF'} • {(attachment.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                </div>
+                {attachment.type?.startsWith('image/') ? (
+                  <button
+                    onClick={() => setZoomedImage(attachment.data)}
+                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                  >
+                    <Download className="h-5 w-5" />
+                  </button>
+                ) : (
+                  <a
+                    href={attachment.data}
+                    download={attachment.name}
+                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                  >
+                    <Download className="h-5 w-5" />
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Image Zoom Modal */}
       {zoomedImage && (
