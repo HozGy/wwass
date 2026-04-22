@@ -17,6 +17,7 @@ const employeeSchema = z.object({
   startDate: z.string().min(1, 'กรุณาระบุวันที่เริ่มงาน'),
   endDate: z.string().optional(),
   status: z.enum(['active', 'resigned']),
+  resignationReason: z.string().optional(),
 })
 
 type EmployeeFormValues = z.infer<typeof employeeSchema>
@@ -66,6 +67,7 @@ export default function EmployeeForm() {
         setValue('startDate', data.startDate)
         setValue('endDate', data.endDate || '')
         setValue('status', data.status)
+        setValue('resignationReason', data.resignationReason || '')
         if (data.profileImageUrl) {
           setPreviewUrl(data.profileImageUrl)
         }
@@ -128,6 +130,7 @@ export default function EmployeeForm() {
         startDate: values.startDate,
         endDate: values.endDate || null,
         status: values.status,
+        resignationReason: values.resignationReason || null,
         attachments: attachmentData,
       }
 
@@ -198,13 +201,13 @@ export default function EmployeeForm() {
     const files = e.target.files
     if (files) {
       const newFiles = Array.from(files)
-      const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB per file
-      const MAX_TOTAL_FILES = 5 // Maximum 5 files total
+      const MAX_FILE_SIZE = 500 * 1024 // 500KB per file
+      const MAX_TOTAL_FILES = 4 // Maximum 4 files total
 
       // Check file sizes
       const oversizedFiles = newFiles.filter(file => file.size > MAX_FILE_SIZE)
       if (oversizedFiles.length > 0) {
-        alert(`ไฟล์ต้องไม่เกิน 5MB ต่อไฟล์`)
+        alert(`ไฟล์ต้องไม่เกิน 500KB ต่อไฟล์`)
         return
       }
 
@@ -305,7 +308,7 @@ export default function EmployeeForm() {
                 เพิ่มไฟล์
               </button>
             </div>
-            <p className="text-xs text-gray-500">รองรับไฟล์ JPG, PNG, PDF (สูงสุด 5MB ต่อไฟล์, สูงสุด 5 ไฟล์)</p>
+            <p className="text-xs text-gray-500">รองรับไฟล์ JPG, PNG, PDF (สูงสุด 500KB ต่อไฟล์, สูงสุด 4 ไฟล์)</p>
 
             {attachments.length > 0 && (
               <div className="space-y-2">
@@ -464,16 +467,30 @@ export default function EmployeeForm() {
           </div>
 
           {status === 'resigned' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                วันที่ลาออก
-              </label>
-              <input
-                {...register('endDate')}
-                type="date"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  วันที่ลาออก
+                </label>
+                <input
+                  {...register('endDate')}
+                  type="date"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  สาเหตุการลาออก
+                </label>
+                <textarea
+                  {...register('resignationReason')}
+                  rows={3}
+                  placeholder="ระบุสาเหตุการลาออก..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </>
           )}
         </div>
 

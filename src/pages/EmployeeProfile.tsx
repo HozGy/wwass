@@ -92,6 +92,11 @@ export default function EmployeeProfile() {
             <p className="text-gray-600 mt-1">
               {employee.status === 'active' ? 'กำลังทำงาน' : 'ลาออกแล้ว'}
             </p>
+            {employee.status === 'resigned' && employee.resignationReason && (
+              <p className="text-sm text-red-600 mt-2 bg-red-50 px-3 py-2 rounded-lg">
+                <span className="font-semibold">สาเหตุการลาออก:</span> {employee.resignationReason}
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div className="flex items-center space-x-2 text-gray-600">
                 <Mail className="h-4 w-4" />
