@@ -4,8 +4,8 @@ import { fetchRetiringEmployees } from '../lib/api'
 import type { Employee } from '../types'
 
 interface EmployeeWithAge extends Employee {
-  retirementDate: Date
-  sixtiethBirthday: Date
+  retirementDate: string
+  sixtiethBirthday: string
   monthsUntilRetirement: number
   isRetiringInFiscalYear: boolean
 }
@@ -127,7 +127,7 @@ export default function RetirementAlert() {
                         employee.monthsUntilRetirement
                       )}`}
                     >
-                      {getRetirementStatusText(employee.retirementDate)}
+                      {getRetirementStatusText(new Date(employee.retirementDate))}
                     </span>
                   </td>
                 </tr>
