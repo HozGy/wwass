@@ -1,0 +1,4 @@
+-- Disable RLS for demo/development purposes
+ALTER TABLE employees DISABLE ROW LEVEL SECURITY;
+ALTER TABLE employee_files DISABLE ROW LEVEL SECURITY;
+ALTER TABLE attendance DISABLE ROW LEVEL SECURITY;
