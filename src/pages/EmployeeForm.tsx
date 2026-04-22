@@ -198,6 +198,23 @@ export default function EmployeeForm() {
     const files = e.target.files
     if (files) {
       const newFiles = Array.from(files)
+      const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB per file
+      const MAX_TOTAL_FILES = 5 // Maximum 5 files total
+
+      // Check file sizes
+      const oversizedFiles = newFiles.filter(file => file.size > MAX_FILE_SIZE)
+      if (oversizedFiles.length > 0) {
+        alert(`ไฟล์ต้องไม่เกิน 5MB ต่อไฟล์`)
+        return
+      }
+
+      // Check total file count
+      const totalFiles = attachments.length + newFiles.length
+      if (totalFiles > MAX_TOTAL_FILES) {
+        alert(`สามารถอัปโหลดได้สูงสุด ${MAX_TOTAL_FILES} ไฟล์`)
+        return
+      }
+
       setAttachments(prev => [...prev, ...newFiles])
     }
   }
@@ -288,7 +305,7 @@ export default function EmployeeForm() {
                 เพิ่มไฟล์
               </button>
             </div>
-            <p className="text-xs text-gray-500">รองรับไฟล์ JPG, PNG, PDF (สูงสุด 10MB ต่อไฟล์)</p>
+            <p className="text-xs text-gray-500">รองรับไฟล์ JPG, PNG, PDF (สูงสุด 5MB ต่อไฟล์, สูงสุด 5 ไฟล์)</p>
 
             {attachments.length > 0 && (
               <div className="space-y-2">
