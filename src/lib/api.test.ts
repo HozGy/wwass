@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fetchEmployees, fetchEmployee, createEmployee, updateEmployee, deleteEmployee } from './api'
 
 // Mock global fetch
-global.fetch = vi.fn()
+(globalThis as any).fetch = vi.fn()
 
 describe('API Client', () => {
   beforeEach(() => {
