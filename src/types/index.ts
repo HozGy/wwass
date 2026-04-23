@@ -12,16 +12,8 @@ export interface Employee {
   endDate: string | null
   status: 'active' | 'resigned'
   resignationReason?: string | null
-  attachments?: Attachment[]
   createdAt: string
   updatedAt: string
-}
-
-export interface Attachment {
-  name: string
-  type: string
-  size: number
-  data: string
 }
 
 export interface EmployeeFile {

@@ -29,7 +29,6 @@ export default function EmployeeForm() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [attachments, setAttachments] = useState<File[]>([])
 
   const {
     register,
@@ -105,19 +104,6 @@ export default function EmployeeForm() {
         profileImageUrl = await compressImage(profileImage)
       }
 
-      // Convert attachments to base64
-      const attachmentData = await Promise.all(
-        attachments.map(async (file) => {
-          const base64 = await fileToBase64(file)
-          return {
-            name: file.name,
-            type: file.type,
-            size: file.size,
-            data: base64,
-          }
-        })
-      )
-
       const employeeData = {
         employeeCode: values.employeeCode || null,
         firstName: values.firstName,
@@ -131,7 +117,6 @@ export default function EmployeeForm() {
         endDate: values.endDate || null,
         status: values.status,
         resignationReason: values.resignationReason || null,
-        attachments: attachmentData,
       }
 
       if (id) {
@@ -197,44 +182,6 @@ export default function EmployeeForm() {
     setPreviewUrl(null)
   }
 
-  function handleAttachmentChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files
-    if (files) {
-      const newFiles = Array.from(files)
-      const MAX_FILE_SIZE = 500 * 1024 // 500KB per file
-      const MAX_TOTAL_FILES = 4 // Maximum 4 files total
-
-      // Check file sizes
-      const oversizedFiles = newFiles.filter(file => file.size > MAX_FILE_SIZE)
-      if (oversizedFiles.length > 0) {
-        alert(`ไฟล์ต้องไม่เกิน 500KB ต่อไฟล์`)
-        return
-      }
-
-      // Check total file count
-      const totalFiles = attachments.length + newFiles.length
-      if (totalFiles > MAX_TOTAL_FILES) {
-        alert(`สามารถอัปโหลดได้สูงสุด ${MAX_TOTAL_FILES} ไฟล์`)
-        return
-      }
-
-      setAttachments(prev => [...prev, ...newFiles])
-    }
-  }
-
-  function handleRemoveAttachment(index: number) {
-    setAttachments(prev => prev.filter((_, i) => i !== index))
-  }
-
-  async function fileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = error => reject(error)
-    })
-  }
-
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center space-x-4">
@@ -284,58 +231,6 @@ export default function EmployeeForm() {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <p className="text-xs text-gray-500 mt-1">รองรับไฟล์ JPG, PNG (สูงสุด 5MB)</p>
-          </div>
-        </div>
-
-        {/* File Attachments */}
-        <div className="border-t pt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-4">
-            เอกสารแนบ
-          </label>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <input
-                type="file"
-                accept="image/*,.pdf"
-                multiple
-                onChange={handleAttachmentChange}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button
-                type="button"
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                เพิ่มไฟล์
-              </button>
-            </div>
-            <p className="text-xs text-gray-500">รองรับไฟล์ JPG, PNG, PDF (สูงสุด 500KB ต่อไฟล์, สูงสุด 4 ไฟล์)</p>
-
-            {attachments.length > 0 && (
-              <div className="space-y-2">
-                {attachments.map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <span className="text-sm text-gray-700">
-                        {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {file.type.startsWith('image/') ? 'รูปภาพ' : 'PDF'}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveAttachment(index)}
-                      className="text-red-500 hover:text-red-700 transition-colors"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
