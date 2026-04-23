@@ -1,7 +1,13 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
-export async function fetchEmployees(page = 1, limit = 10) {
-  const response = await fetch(`${API_BASE}/employees?page=${page}&limit=${limit}`);
+export async function fetchEmployees(page = 1, limit = 10, search?: string, status?: string) {
+  const params = new URLSearchParams();
+  params.append('page', String(page));
+  params.append('limit', String(limit));
+  if (search && search.trim() !== '') params.append('search', search.trim());
+  if (status && status !== 'all') params.append('status', status);
+  
+  const response = await fetch(`${API_BASE}/employees?${params}`);
   return response.json();
 }
 

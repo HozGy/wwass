@@ -8,7 +8,6 @@ import type { Employee } from '../types'
 export default function EmployeeList() {
   const { isAuthenticated } = useAuth()
   const [employees, setEmployees] = useState<Employee[]>([])
-  const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'resigned'>('all')
   const [loading, setLoading] = useState(true)
@@ -21,12 +20,12 @@ export default function EmployeeList() {
 
   useEffect(() => {
     fetchEmployeesData()
-  }, [currentPage])
+  }, [currentPage, searchQuery, statusFilter])
 
   async function fetchEmployeesData() {
     try {
       setLoading(true)
-      const response = await fetchEmployees(currentPage, ITEMS_PER_PAGE)
+      const response = await fetchEmployees(currentPage, ITEMS_PER_PAGE, searchQuery, statusFilter)
       if (response && response.data && response.pagination) {
         setEmployees(response.data)
         setTotalPages(response.pagination.totalPages)
@@ -43,10 +42,6 @@ export default function EmployeeList() {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    filterEmployees()
-  }, [employees, searchQuery, statusFilter])
 
   function handlePageChange(page: number) {
     setCurrentPage(page)
@@ -76,28 +71,6 @@ export default function EmployeeList() {
     } finally {
       setImporting(false)
     }
-  }
-
-  function filterEmployees() {
-    let filtered = employees
-
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((emp) => emp.status === statusFilter)
-    }
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(
-        (emp) =>
-          emp.firstName.toLowerCase().includes(query) ||
-          emp.lastName.toLowerCase().includes(query) ||
-          emp.phone.includes(query) ||
-          emp.citizenId.includes(query) ||
-          (emp.employeeCode && emp.employeeCode.toLowerCase().includes(query))
-      )
-    }
-
-    setFilteredEmployees(filtered)
   }
 
   return (
@@ -175,7 +148,7 @@ export default function EmployeeList() {
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
           <p className="text-gray-500 mt-4">กำลังโหลดข้อมูล...</p>
         </div>
-      ) : filteredEmployees.length === 0 ? (
+      ) : employees.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-lg p-16 text-center">
           <User className="h-16 w-16 mx-auto text-gray-300 mb-4" />
           <p className="text-gray-500 text-lg">ไม่พบข้อมูลพนักงาน</p>
@@ -183,7 +156,7 @@ export default function EmployeeList() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEmployees.map((employee) => (
+          {employees.map((employee) => (
             <div
               key={employee._id}
               className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"

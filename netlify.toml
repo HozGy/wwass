@@ -3,7 +3,7 @@
   publish = "dist"
 
 [context.production.environment]
-  VITE_API_URL = "https://employee-management-backend-u0qr.onrender.com/api"
+  VITE_API_URL = "https://employee-management-backend.onrender.com/api"
 
 [[redirects]]
   from = "/*"
